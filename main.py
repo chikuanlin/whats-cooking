@@ -4,7 +4,7 @@ from base_solver import BaseSolver
 from example_method_file.example_method import ExampleSolver
 
 from base_data_processor import BaseDataProcessor
-from base_data_processor import SimpleIngredientsEncoder
+from processors.simple_ingredients_encoder import SimpleIngredientsEncoder
 
 if __name__ == "__main__":
     # dataset loading
@@ -24,6 +24,6 @@ if __name__ == "__main__":
     solvers = [solver for solver in BaseSolver.__subclasses__()]
     for solver in solvers:
         print('Now solving using {} solver'.format(solver.__name__))
-        s = solver()
+        s = solver(dataset)
         # s.train(train_x, train_y)
         # s.test_x(test_x)
