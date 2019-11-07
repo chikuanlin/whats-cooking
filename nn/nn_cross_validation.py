@@ -7,7 +7,7 @@ sys.path.append(BASE_DIR)
 from base_solver import BaseSolver
 from nn_solver import NNSolver
 from processors.simple_ingredients_encoder import SimpleIngredientsEncoder
-from dataset import WhatsCookingDataset
+from dataset.dataset import WhatsCookingDataset
 import numpy as np
 from sklearn.model_selection import KFold
 

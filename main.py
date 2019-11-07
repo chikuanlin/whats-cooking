@@ -1,4 +1,4 @@
-from dataset import WhatsCookingDataset
+from dataset.dataset import WhatsCookingDataset
 
 from base_solver import BaseSolver
 from example_method_file.example_method import ExampleSolver

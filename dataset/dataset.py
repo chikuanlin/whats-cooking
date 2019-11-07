@@ -1,4 +1,9 @@
 import json
+import os
+import sys
+BASE_DIR = os.path.dirname(os.path.abspath(__file__))
+PARENT_DIR = os.path.abspath(os.path.join(BASE_DIR, os.path.pardir))
+sys.path.append(PARENT_DIR)
 
 class Cuisine:
     def __init__(self, **kwargs):
@@ -11,7 +16,7 @@ class Cuisine:
         return info + ', '.join(self.ingredients)
 
 class WhatsCookingDataset:
-    def __init__(self, file_path='train.json'):
+    def __init__(self, file_path='dataset/train.json'):
         self.cuisines = []
         self.id2ingredient = []
         self.ingredient2id = {}
@@ -51,7 +56,7 @@ class WhatsCookingDataset:
             for ingredient in ingredient_output:
                 f.write(ingredient + '\n')
 
-    def load_test_file(self, file_path='test.json'):
+    def load_test_file(self, file_path='dataset/test.json'):
         cuisines = []
         with open(file_path, encoding='utf-8', mode = 'r') as json_file:
             for item in json.load(json_file):

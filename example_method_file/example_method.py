@@ -9,5 +9,5 @@ from constants import *
 
 class ExampleSolver(BaseSolver):
     
-    def __init__(self):
-        super(ExampleSolver, self).__init__()
+    def __init__(self, *args):
+        super(ExampleSolver, self).__init__(*args)
