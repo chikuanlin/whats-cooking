@@ -38,6 +38,9 @@ class SimpleIngredientsEncoder(BaseDataProcessor):
             return self.ingredient2id[ingredient]
         else:
             return None
+    
+    def filter_none(self, list):
+        return [item for item in list if item != None]
         
     def transform(self, cuisines):
         print('Use fitted data parameters to transform cuisines to feature vectors.')
@@ -46,11 +49,8 @@ class SimpleIngredientsEncoder(BaseDataProcessor):
         encoded_ingredients = np.zeros((len(cuisines), len(self.ingredient2id)))
         for idx, cuisine in enumerate(cuisines):
             ingredients = cuisine.ingredients
-            indices = list(
-                filter(
-                    None, 
-                    [self.get_ingredient_index(i) for i in ingredients],
-                ),
+            indices = self.filter_none(
+                [self.get_ingredient_index(i) for i in ingredients],
             )
             encoded_ingredients[idx, indices] = 1
         return encoded_ingredients
