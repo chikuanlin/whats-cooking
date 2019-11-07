@@ -1,3 +1,6 @@
+from sklearn.preprocessing import OneHotEncoder
+import numpy as np
+
 class BaseDataProcessor:
     
     def __init__(self):
@@ -20,13 +23,34 @@ class BaseDataProcessor:
         self.fit(dataset)
         return self.transform(dataset.cuisines)
 
-class ExampleProcessor1(BaseDataProcessor):
+class SimpleIngredientsEncoder(BaseDataProcessor):
     def __init__(self):
-        super(ExampleProcessor1, self).__init__()
+        super(SimpleIngredientsEncoder, self).__init__()
+        self.ingredient2id = {}
 
     def fit(self, dataset):
         print('fit data in dataset')
+#        self.encoder.fit(np.array(dataset.id2ingredient).reshape((-1,1)))
+        self.ingredient2id = dataset.ingredient2id
+
+    def get_ingredient_index(self, ingredient):
+        if (ingredient in self.ingredient2id):
+            return self.ingredient2id[ingredient]
+        else:
+            return None
         
     def transform(self, cuisines):
         print('Use fitted data parameters to transform cuisines to feature vectors.')
-        return cuisines
+#        test_ingredients = np.array(['garlic', 'seasoning']).reshape((-1, 1))
+#        test_encoding = self.encoder.transform(test_ingredients).toarray() 
+        encoded_ingredients = np.zeros((len(cuisines), len(self.ingredient2id)))
+        for idx, cuisine in enumerate(cuisines):
+            ingredients = cuisine.ingredients
+            indices = list(
+                filter(
+                    None, 
+                    [self.get_ingredient_index(i) for i in ingredients],
+                ),
+            )
+            encoded_ingredients[idx, indices] = 1
+        return encoded_ingredients

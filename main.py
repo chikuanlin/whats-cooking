@@ -4,7 +4,7 @@ from base_solver import BaseSolver
 from example_method_file.example_method import ExampleSolver
 
 from base_data_processor import BaseDataProcessor
-from base_data_processor import ExampleProcessor1
+from base_data_processor import SimpleIngredientsEncoder
 
 if __name__ == "__main__":
     # dataset loading
@@ -15,7 +15,7 @@ if __name__ == "__main__":
 
     # pre-processing
     processors = [processor for processor in BaseDataProcessor.__subclasses__()]
-
+    
     p = processors[0]()
     train_x = p.fit_transform(dataset)
     test_x = p.transform(test_cuisines)

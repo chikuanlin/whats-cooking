@@ -17,7 +17,7 @@ class WhatsCookingDataset:
         self.ingredient2id = {}
         self.id2cuisine = []
         self.cuisine2id = {}
-        with open(file_path) as json_file:
+        with open(file_path, encoding='utf-8', mode = 'r') as json_file:
             for item in json.load(json_file):
                 self.cuisines.append(Cuisine(**item))
                 if item['cuisine'] not in self.cuisine2id:
@@ -44,16 +44,16 @@ class WhatsCookingDataset:
             cuisine_output = self.id2cuisine
             ingredient_output = self.id2ingredient
 
-        with open('cuisine_labels.txt', 'w') as f:
+        with open('cuisine_labels.txt', 'w', encoding='utf-8') as f:
             for cuisine in cuisine_output:
                 f.write(cuisine + '\n')
-        with open('ingredients_labels.txt', 'w') as f:
+        with open('ingredients_labels.txt', 'w', encoding='utf-8') as f:
             for ingredient in ingredient_output:
                 f.write(ingredient + '\n')
 
     def load_test_file(self, file_path='test.json'):
         cuisines = []
-        with open(file_path) as json_file:
+        with open(file_path, encoding='utf-8', mode = 'r') as json_file:
             for item in json.load(json_file):
                 cuisines.append(Cuisine(**item))
         return cuisines
