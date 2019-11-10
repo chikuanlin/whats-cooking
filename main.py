@@ -1,7 +1,8 @@
 from dataset.dataset import WhatsCookingDataset
 
 from base_solver import BaseSolver
-from example_method_file.example_method import ExampleSolver
+# from example_method_file.example_method import ExampleSolver
+from XGBoost.XGB_solver import XGBSolver
 
 from base_data_processor import BaseDataProcessor
 from processors.simple_ingredients_encoder import SimpleIngredientsEncoder
@@ -21,9 +22,10 @@ if __name__ == "__main__":
     test_x = p.transform(test_cuisines)
 
     # training and testing
-    solvers = [solver for solver in BaseSolver.__subclasses__()]
+    # solvers = [solver for solver in BaseSolver.__subclasses__()]
+    solvers = [XGBSolver]
     for solver in solvers:
         print('Now solving using {} solver'.format(solver.__name__))
         s = solver(dataset)
-        # s.train(train_x, train_y)
-        # s.test_x(test_x)
+        s.train(train_x, train_y)
+        s.test(test_x, test_cuisines)
