@@ -1,4 +1,5 @@
 from dataset.dataset import WhatsCookingDataset
+from dataset.dataset import WhatsCookingStemmedDataset
 
 from base_solver import BaseSolver
 from example_method_file.example_method import ExampleSolver
@@ -10,9 +11,16 @@ if __name__ == "__main__":
     # dataset loading
     dataset = WhatsCookingDataset()
     train_y = [dataset.cuisine2id[cuisine.cuisine] for cuisine in dataset.cuisines]
+    id2ingredient = dataset.id2ingredient
 
     test_cuisines = dataset.load_test_file()
-
+    
+    # load stemmed dataset
+    dataset_stemmed = WhatsCookingStemmedDataset()
+    id2ingredient_stemmed = dataset_stemmed.id2ingredient
+    id2cuisine_stemmed = dataset_stemmed.id2cuisine
+    word_count = dataset_stemmed.wordcount
+    
     # pre-processing
     processors = [processor for processor in BaseDataProcessor.__subclasses__()]
     
