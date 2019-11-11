@@ -3,7 +3,8 @@ from dataset.dataset import WhatsCookingStemmedDataset
 from dataset.dataset import WhatsCookingStemmedSeparatedDataset
 
 from base_solver import BaseSolver
-from example_method_file.example_method import ExampleSolver
+# from example_method_file.example_method import ExampleSolver
+from SVM.SVC_solver import SVCSolver
 
 from base_data_processor import BaseDataProcessor
 from processors.simple_ingredients_encoder import SimpleIngredientsEncoder
@@ -40,9 +41,9 @@ if __name__ == "__main__":
     test_x_tfidf = tf_idf.transform(test_cuisines_stemmed)
 
     # training and testing
-    solvers = [solver for solver in BaseSolver.__subclasses__()]
+    solvers = [SVCSolver]
     for solver in solvers:
         print('Now solving using {} solver'.format(solver.__name__))
         s = solver(dataset)
-        # s.train(train_x, train_y)
-        # s.test_x(test_x)
+        s.train(train_x, train_y)
+        s.test(test_x, test_cuisines)
