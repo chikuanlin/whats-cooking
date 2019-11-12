@@ -8,7 +8,7 @@ from base_data_processor import BaseDataProcessor
 from processors.simple_ingredients_encoder import SimpleIngredientsEncoder
 from processors.tf_idf import TfIdf
 
-TF_IDF_K = 5000
+TF_IDF_K = 6200
 
 if __name__ == "__main__":
 

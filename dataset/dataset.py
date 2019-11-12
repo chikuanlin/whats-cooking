@@ -5,6 +5,7 @@ from nltk.stem import PorterStemmer
 from nltk.tokenize import word_tokenize
 from nltk.corpus import stopwords
 import string
+from tqdm import tqdm 
 # import re 
 
 BASE_DIR = os.path.dirname(os.path.abspath(__file__))
@@ -82,7 +83,7 @@ class WhatsCookingStemmedDataset:
         self.porter = PorterStemmer()
         self.english_stopwords = set(stopwords.words('english'))
         with open(file_path, encoding='utf-8', mode = 'r') as json_file:
-            for item in json.load(json_file):
+            for item in tqdm(json.load(json_file)):
                 if item['cuisine'] not in self.cuisine2id:
                     self.id2cuisine.append(item['cuisine'])
                     self.cuisine2id[item['cuisine']] = len(self.id2cuisine)-1
@@ -155,14 +156,19 @@ class WhatsCookingStemmedDataset:
     def _stem_ingredient(self, ingredient):
         token_ingredient = word_tokenize(ingredient.lower())
         token_ingredient_rm_punc = [
-            self._remove_punctuation(token)
+            self._remove_punctuation(token).strip()
             for token in token_ingredient
+        ]
+        token_ingredient_rm_empty = [
+            token
+            for token in token_ingredient_rm_punc 
+            if len(token) > 1
         ]
         stemmed_ingredient_tokens = [
             # remove all parenthesis and words inside
             # porter.stem(re.sub("[\(\[].*?[\)\]]", "", token)) 
             self.porter.stem(token)
-            for token in token_ingredient_rm_punc
+            for token in token_ingredient_rm_empty
             if not token in self.english_stopwords
         ]
         ingredient_stemmed = " ".join(stemmed_ingredient_tokens)
