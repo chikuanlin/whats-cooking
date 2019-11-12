@@ -28,16 +28,31 @@ class TfIdf(BaseDataProcessor):
     def fit(self, dataset): 
         print("Computing the %d most important words with tf-idf ..." % self.k)
         tf_idf_score = np.zeros((len(dataset.cuisines), len(dataset.ingredient2id)))
-        N = len(dataset.cuisines)
-        for cuisine_idx, cuisine in enumerate(dataset.cuisines):
-            ingredients = cuisine.ingredients
-            for ingredient in ingredients:
+        cuisine2ingredientscount = {}
+        ingredient2cuisine = {}
+        N = len(cuisine2ingredientscount)
+        # count the occurrence of each ingredient in each cuisine type
+        # and the number of cuisine types that contains each ingredient
+        for cuisine in dataset.cuisines:
+            if (cuisine.cuisine not in cuisine2ingredientscount):
+                cuisine2ingredientscount[cuisine.cuisine] = {}
+            for ingredient in cuisine.ingredients:
+                try:
+                    cuisine2ingredientscount[cuisine.cuisine][ingredient] += 1
+                    ingredient2cuisine[ingredient].add(cuisine.cuisine)
+                except:
+                    cuisine2ingredientscount[cuisine.cuisine][ingredient] = 1
+                    ingredient2cuisine[ingredient] = {cuisine.cuisine}
+        # calculate tf-idf score
+        for cuisine_type, ingredients in enumerate(cuisine2ingredientscount):
+            for ingredient, num_ingredient in enumerate(ingredients):
                 if (ingredient not in dataset.ingredient2id):
                     continue
                 ingredient_idx = dataset.ingredient2id[ingredient]
-                tf_idf_score[cuisine_idx, ingredient_idx] = 1 / len(ingredients) * (
-                    np.log(N / (dataset.ingredient_count[ingredient] + 1))
-                )
+                cuisine_idx = dataset.cuisine2id[cuisine_type]
+                tf_idf_score[cuisine_idx, ingredient_idx] = \
+                    num_ingredient / len(ingredients) * \
+                    np.log(N / (len(ingredient2cuisine[ingredient]) + 1))
         tf_idf_mean = self._compute_column_mean(tf_idf_score)
         top_k_indices = np.flip(np.argsort(tf_idf_mean))[0:self.k]
         self.id2ingredient = [dataset.id2ingredient[i] for i in top_k_indices]
@@ -59,5 +74,8 @@ class TfIdf(BaseDataProcessor):
     def _compute_column_mean(self, matrix):
         mean = np.zeros((matrix.shape[1]))
         for i in range(0, matrix.shape[1]):
-            mean[i] = np.sum(matrix[:, i]) / np.count_nonzero(matrix[:, i])
+            if (np.sum(matrix[:, i]) == 0):
+                mean[i] = 0
+            else:
+                mean[i] = np.sum(matrix[:, i]) / np.count_nonzero(matrix[:, i])
         return mean

@@ -8,7 +8,7 @@ from base_data_processor import BaseDataProcessor
 from processors.simple_ingredients_encoder import SimpleIngredientsEncoder
 from processors.tf_idf import TfIdf
 
-TF_IDF_K = 6200
+TF_IDF_K = 2500
 
 if __name__ == "__main__":
 
@@ -29,7 +29,7 @@ if __name__ == "__main__":
 
     # pre-processing
     processors = [processor for processor in BaseDataProcessor.__subclasses__()]
-    
+
     p = processors[0]()
     train_x = p.fit_transform(dataset)
     test_x = p.transform(test_cuisines)
