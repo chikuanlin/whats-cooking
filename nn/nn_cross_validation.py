@@ -27,6 +27,9 @@ if __name__ == "__main__":
         solver = NNSolver(dataset)
         solver.train(x_train, y_train, x_test=x_test, y_test=y_test)
         print(solver.train_loss_history[-1], solver.test_loss_history[-1])
+
+    # solver = NNSolver(dataset)
+    # solver.train(x, y)
         
 
     cuisines = dataset.load_test_file()
