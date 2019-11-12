@@ -6,27 +6,37 @@ from example_method_file.example_method import ExampleSolver
 
 from base_data_processor import BaseDataProcessor
 from processors.simple_ingredients_encoder import SimpleIngredientsEncoder
+from processors.tf_idf import TfIdf
+
+TF_IDF_K = 5000
 
 if __name__ == "__main__":
+
     # dataset loading
     dataset = WhatsCookingDataset()
     train_y = [dataset.cuisine2id[cuisine.cuisine] for cuisine in dataset.cuisines]
-    id2ingredient = dataset.id2ingredient
 
     test_cuisines = dataset.load_test_file()
     
     # load stemmed dataset
     dataset_stemmed = WhatsCookingStemmedDataset()
-    id2ingredient_stemmed = dataset_stemmed.id2ingredient
-    id2cuisine_stemmed = dataset_stemmed.id2cuisine
-    word_count = dataset_stemmed.wordcount
+    train_y_stemmed = [
+        dataset_stemmed.cuisine2id[cuisine.cuisine] 
+        for cuisine in dataset_stemmed.cuisines
+    ]
     
+    test_cuisines_stemmed = dataset_stemmed.load_test_file()
+
     # pre-processing
     processors = [processor for processor in BaseDataProcessor.__subclasses__()]
     
     p = processors[0]()
     train_x = p.fit_transform(dataset)
     test_x = p.transform(test_cuisines)
+
+    tf_idf = TfIdf(TF_IDF_K)
+    train_x_tfidf = tf_idf.fit_transform(dataset_stemmed)
+    test_x_tfidf = tf_idf.transform(test_cuisines_stemmed)
 
     # training and testing
     solvers = [solver for solver in BaseSolver.__subclasses__()]
