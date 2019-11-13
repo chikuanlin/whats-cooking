@@ -44,6 +44,9 @@ if __name__ == "__main__":
         y_train, y_test = y[train_index], y[test_index]
         solver = NNSolver(dataset, in_features=TF_IDF_K)
         solver.train(x_train, y_train, x_test=x_test, y_test=y_test)
+
+    # solver = NNSolver(dataset)
+    # solver.train(x, y)
         
     # cuisines = dataset.load_test_file()
     # x_test = encoder.transform(cuisines)
