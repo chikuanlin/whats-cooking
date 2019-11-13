@@ -9,7 +9,6 @@ class WhatsCookingNet(nn.Module):
             nn.Linear(in_features, 128),
             nn.BatchNorm1d(128),
             nn.ReLU(),
-            nn.Dropout(0.5),
             nn.Linear(128, 64),
             nn.BatchNorm1d(64),
             nn.ReLU(),
