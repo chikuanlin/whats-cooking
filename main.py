@@ -1,5 +1,6 @@
 from dataset.dataset import WhatsCookingDataset
 from dataset.dataset import WhatsCookingStemmedDataset
+from dataset.dataset import WhatsCookingStemmedSeparatedDataset
 
 from base_solver import BaseSolver
 from example_method_file.example_method import ExampleSolver
@@ -19,7 +20,9 @@ if __name__ == "__main__":
     test_cuisines = dataset.load_test_file()
     
     # load stemmed dataset
-    dataset_stemmed = WhatsCookingStemmedDataset()
+    dataset_stemmed = WhatsCookingStemmedSeparatedDataset()
+    train_x_stemmed = dataset_stemmed.cuisines
+
     train_y_stemmed = [
         dataset_stemmed.cuisine2id[cuisine.cuisine] 
         for cuisine in dataset_stemmed.cuisines

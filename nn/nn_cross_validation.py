@@ -6,7 +6,9 @@ sys.path.append(PARENT_DIR)
 sys.path.append(BASE_DIR)
 from nn_solver import NNSolver
 from processors.simple_ingredients_encoder import SimpleIngredientsEncoder
-from dataset.dataset import WhatsCookingDataset, WhatsCookingStemmedDataset
+from dataset.dataset import WhatsCookingDataset, \
+    WhatsCookingStemmedDataset, \
+    WhatsCookingStemmedSeparatedDataset
 import numpy as np
 from sklearn.model_selection import KFold
 from processors.tf_idf import TfIdf
@@ -16,10 +18,13 @@ TF_IDF_K = 2500
 if __name__ == "__main__":
     
     # Raw dataset
-    dataset = WhatsCookingDataset()
+    # dataset = WhatsCookingDataset()
     
     # Stemmed dataset
     # dataset = WhatsCookingStemmedDataset()
+    
+    # Stemmed and ingredient separated dataset
+    dataset = WhatsCookingStemmedSeparatedDataset()
     
     # Simple encoder
     # encoder = SimpleIngredientsEncoder()

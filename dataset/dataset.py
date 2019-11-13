@@ -178,6 +178,115 @@ class WhatsCookingStemmedDataset:
         for punctuation in string.punctuation:
             token = token.replace(punctuation, '')
         return token
+    
+# WhatsCookingStemmedSeparatedDataset splits  each ingredient into 
+# separate words
+class WhatsCookingStemmedSeparatedDataset:
+    def __init__(self, file_path='dataset/train.json'):
+        print("Loading and stemming separated What's Cooking dataset ...")
+        self.cuisines = []
+        self.id2ingredient = []
+        self.ingredient2id = {}
+        self.id2cuisine = []
+        self.cuisine2id = {}
+        self.porter = PorterStemmer()
+        self.english_stopwords = set(stopwords.words('english'))
+        with open(file_path, encoding='utf-8', mode = 'r') as json_file:
+            for item in tqdm(json.load(json_file)):
+                if item['cuisine'] not in self.cuisine2id:
+                    self.id2cuisine.append(item['cuisine'])
+                    self.cuisine2id[item['cuisine']] = len(self.id2cuisine)-1
+                ingredients_stemmed = []
+                for ingredient in item['ingredients']:
+                    ingredient_stemmed = [
+                        token 
+                        for token in self._stem_and_separate_ingredient(
+                            ingredient,
+                        ) 
+                        if len(token) > 1
+                    ]
+                    for token in ingredient_stemmed:
+                        ingredients_stemmed.append(token)
+                        if token not in self.ingredient2id:
+                            self.id2ingredient.append(token)
+                            self.ingredient2id[token] = \
+                                len(self.id2ingredient) - 1
+                self.cuisines.append(
+                    Cuisine(**{
+                        'id': item.get('id', None),
+                        'cuisine': item['cuisine'],
+                        'ingredients': ingredients_stemmed,
+                    })
+                )
+        print("Successfully loaded stemmed and separated What's Cooking dataset!")
+        print(
+            "# of cuisines = %d; # of ingredients = %d" \
+            % (len(self.id2cuisine), len(self.id2ingredient)),
+        )
+
+    def __len__(self):
+        return len(self.cuisines)
+
+    def __getitem__(self, index):
+        return self.cuisines[index]
+
+    def save_to_text(self, sorting=True):
+        if sorting:
+            cuisine_output = self.id2cuisine.copy()
+            ingredient_output = self.id2ingredient.copy()
+            cuisine_output.sort()
+            ingredient_output.sort()
+        else:
+            cuisine_output = self.id2cuisine
+            ingredient_output = self.id2ingredient
+
+        with open('cuisine_labels.txt', 'w', encoding='utf-8') as f:
+            for cuisine in cuisine_output:
+                f.write(cuisine + '\n')
+        with open('ingredients_labels.txt', 'w', encoding='utf-8') as f:
+            for ingredient in ingredient_output:
+                f.write(ingredient + '\n')
+
+    def load_test_file(self, file_path='dataset/test.json'):
+        cuisines = []
+        with open(file_path, encoding='utf-8', mode = 'r') as json_file:
+            for item in json.load(json_file):
+                ingredients_stemmed = []
+                for ingredient in item['ingredients']:    
+                    ingredients_stemmed += self._stem_and_separate_ingredient(
+                        ingredient,
+                    )
+                cuisines.append(
+                    Cuisine(**{
+                        'id': item.get('id', None),
+                        'cuisine': item.get('cuisine', None),
+                        'ingredients': ingredients_stemmed,
+                    })
+                )
+        return cuisines
+    
+    def _stem_and_separate_ingredient(self, ingredient):
+        token_ingredient = word_tokenize(ingredient.lower())
+        token_ingredient_rm_punc = [
+            self._remove_punctuation(token).strip()
+            for token in token_ingredient
+        ]
+        token_ingredient_rm_empty = [
+            token
+            for token in token_ingredient_rm_punc 
+            if len(token) > 1
+        ]
+        stemmed_ingredient_tokens = [
+            self.porter.stem(token)
+            for token in token_ingredient_rm_empty
+            if not token in self.english_stopwords
+        ]
+        return stemmed_ingredient_tokens
+    
+    def _remove_punctuation(self, token):
+        for punctuation in string.punctuation:
+            token = token.replace(punctuation, '')
+        return token
 
 
 if __name__ == "__main__":
