@@ -13,16 +13,41 @@ class knn_solver(BaseSolver):
     def __init__(self, dataset, in_features=6714):
         super().__init__(dataset, in_features)
 
-    def get_dist(self, x_train, x_test):
-        x_train = x_train.cuda().half()
-        x_test = x_test.cuda().half()
+    def PCA(self, x_train, x_test, k=500):
+        X_mean = x_train.mean(0, keepdim=True)
+        X = x_train - X_mean
+        X_te = x_test - X_mean
+
+        U,S,V = torch.svd(torch.t(x_train))
+        return torch.mm(X,U[:,:k]), torch.mm(X_te,U[:,:k])
+
+
+    def get_dist(self, x_train, x_test):        
+        x_train, x_test = self.PCA(x_train, x_test)
+        #print(x_train.shape, x_test.shape)
         num_train = x_train.shape[0]
         num_test  = x_test.shape[0]
         x_test = x_test.t()
         dist = (x_train * x_train).sum(1).view(-1,1) + \
                (x_test * x_test).sum(0).view(1,-1) - \
                x_train.mm(x_test)*2
-        return dist.cpu().float()
+        return dist.float()
+
+
+    def get_maha_dist(self, x_train, x_test):
+        x_train, x_test = self.PCA(x_train, x_test)
+        #x_train = x_train.cuda().half()
+        #x_test = x_test.cuda().half()
+        m = x_train.mean(0, keepdim=True)
+        xm = x_train - m
+        n = xm.shape[0]
+        cov = xm.t().mm(xm) / n
+        
+        icov = torch.inverse(cov)
+        dist = xm.mm(icov).mm((x_test-m).t())
+        print("Covariance shape:",icov.shape)
+        return dist
+        
 
     def predict(self, dists, y_train, k=1):
         num_train, num_test = dists.shape
