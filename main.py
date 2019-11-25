@@ -9,8 +9,6 @@ from base_data_processor import BaseDataProcessor
 from processors.simple_ingredients_encoder import SimpleIngredientsEncoder
 from processors.tf_idf import TfIdf
 
-TF_IDF_K = 2500
-
 if __name__ == "__main__":
 
     # dataset loading
@@ -20,7 +18,7 @@ if __name__ == "__main__":
     test_cuisines = dataset.load_test_file()
     
     # load stemmed dataset
-    dataset_stemmed = WhatsCookingStemmedSeparatedDataset()
+    dataset_stemmed = WhatsCookingStemmedSeparatedDataset(stem=False)
     train_x_stemmed = dataset_stemmed.cuisines
 
     train_y_stemmed = [
@@ -37,7 +35,7 @@ if __name__ == "__main__":
     train_x = p.fit_transform(dataset)
     test_x = p.transform(test_cuisines)
 
-    tf_idf = TfIdf(TF_IDF_K)
+    tf_idf = TfIdf()
     train_x_tfidf = tf_idf.fit_transform(dataset_stemmed)
     test_x_tfidf = tf_idf.transform(test_cuisines_stemmed)
 
