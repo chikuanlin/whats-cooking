@@ -84,9 +84,9 @@ class TfIdf(BaseDataProcessor):
             ]
             for i in indices:
                 encoded_ingredients[idx, i] += self.id2importance[i]
-            encoded_ingredients[idx, :] = \
-                encoded_ingredients[idx, :]/ \
-                np.linalg.norm(encoded_ingredients[idx, :]) 
+            # encoded_ingredients[idx, :] = \
+            #     encoded_ingredients[idx, :]/ \
+            #     np.linalg.norm(encoded_ingredients[idx, :]) 
         return encoded_ingredients
     
     def _compute_column_mean(self, matrix):
