@@ -18,19 +18,22 @@ from base_data_processor import BaseDataProcessor
 
 
 class TfIdf(BaseDataProcessor):
-    def __init__(self, k):
+    def __init__(self, k=None):
         super(TfIdf, self).__init__()
         # processor will select the top-k important ingredients
         self.k = k  
         self.ingredient2id = {}
         self.id2ingredient = []
+        self.id2importance = []
 
     def fit(self, dataset): 
-        print("Computing the %d most important words with tf-idf ..." % self.k)
         cuisine2ingredientscount = {}
         ingredient2cuisine = {}
         cuisine2allingredientscount = {}
         N = len(dataset.cuisine2id)
+        if (self.k == None):
+            self.k = len(dataset.id2ingredient)
+        print("Computing the %d most important words with tf-idf ..." % self.k)
         # count the occurrence of each ingredient in each cuisine type
         # and the number of cuisine types that contains each ingredient
         for cuisine in dataset.cuisines:
@@ -66,6 +69,7 @@ class TfIdf(BaseDataProcessor):
         tf_idf_mean = self._compute_column_mean(tf_idf_score)
         top_k_indices = np.flip(np.argsort(tf_idf_mean))[0:self.k]
         self.id2ingredient = [dataset.id2ingredient[i] for i in top_k_indices]
+        self.id2importance = [tf_idf_mean[i] for i in top_k_indices]
         for ingredient_idx, ingredient in enumerate(self.id2ingredient):
             self.ingredient2id[ingredient] = ingredient_idx
         
@@ -77,8 +81,12 @@ class TfIdf(BaseDataProcessor):
                 self.ingredient2id[ingredient] 
                 for ingredient in cuisine.ingredients 
                 if ingredient in self.ingredient2id
-            ]            
-            encoded_ingredients[idx, indices] = 1
+            ]
+            for i in indices:
+                encoded_ingredients[idx, i] += self.id2importance[i]
+            encoded_ingredients[idx, :] = \
+                encoded_ingredients[idx, :]/ \
+                np.linalg.norm(encoded_ingredients[idx, :]) 
         return encoded_ingredients
     
     def _compute_column_mean(self, matrix):

@@ -161,9 +161,10 @@ class WhatsCookingStemmedDataset(WhatsCookingDataset):
 # WhatsCookingStemmedSeparatedDataset splits  each ingredient into 
 # separate words
 class WhatsCookingStemmedSeparatedDataset(WhatsCookingDataset):
-    def __init__(self, file_path='dataset/train.json'):
+    def __init__(self, stem = True, file_path='dataset/train.json'):
         print("Loading and stemming separated What's Cooking training dataset ...")
         super(WhatsCookingStemmedSeparatedDataset, self).__init__(None)
+        self.stem = stem
         self.porter = PorterStemmer()
         self.english_stopwords = set(stopwords.words('english'))
         with open(file_path, encoding='utf-8', mode = 'r') as json_file:
@@ -230,12 +231,17 @@ class WhatsCookingStemmedSeparatedDataset(WhatsCookingDataset):
             for token in token_ingredient_rm_punc 
             if len(token) > 1
         ]
-        stemmed_ingredient_tokens = [
-            self.porter.stem(token)
+        if (self.stem):
+            return [
+                self.porter.stem(token)
+                for token in token_ingredient_rm_empty
+                if not token in self.english_stopwords
+            ]
+        return [
+            token
             for token in token_ingredient_rm_empty
             if not token in self.english_stopwords
         ]
-        return stemmed_ingredient_tokens
     
     def _remove_punctuation(self, token):
         for punctuation in string.punctuation:
