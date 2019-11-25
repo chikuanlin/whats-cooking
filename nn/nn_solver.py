@@ -29,11 +29,11 @@ class NNSolver(BaseSolver):
 
         # default training parameters
         self.learning_rate = 1e-3
-        self.batch_size = 128
-        self.weight_decay = 1e-3
+        self.batch_size = 256
+        self.weight_decay = 0.0
         self.step_size = 10
-        self.gamma = 0.1
-        self.epochs = 10
+        self.gamma = 0.5
+        self.epochs = 40
 
         # loss history
         self.train_loss_history = []
