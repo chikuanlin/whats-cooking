@@ -7,6 +7,8 @@ sys.path.append(BASE_DIR)
 from base_solver import BaseSolver
 import numpy as np
 import torch
+import torch.nn.functional as F
+from sklearn.metrics.pairwise import pairwise_distances
 
 class knn_solver(BaseSolver):
     
@@ -22,32 +24,15 @@ class knn_solver(BaseSolver):
         return torch.mm(X,U[:,:k]), torch.mm(X_te,U[:,:k])
 
 
-    def get_dist(self, x_train, x_test):        
+    def get_dist(self, x_train, x_test, metric="braycurtis"):
         x_train, x_test = self.PCA(x_train, x_test)
-        #print(x_train.shape, x_test.shape)
-        num_train = x_train.shape[0]
-        num_test  = x_test.shape[0]
-        x_test = x_test.t()
-        dist = (x_train * x_train).sum(1).view(-1,1) + \
-               (x_test * x_test).sum(0).view(1,-1) - \
-               x_train.mm(x_test)*2
+        n0 = x_train.shape[0]
+        n1 = x_test.shape[0]
+        dist = pairwise_distances(x_train.numpy(), x_test.numpy(), metric=metric)
+        dist = torch.from_numpy(dist)
+          
         return dist.float()
 
-
-    def get_maha_dist(self, x_train, x_test):
-        x_train, x_test = self.PCA(x_train, x_test)
-        #x_train = x_train.cuda().half()
-        #x_test = x_test.cuda().half()
-        m = x_train.mean(0, keepdim=True)
-        xm = x_train - m
-        n = xm.shape[0]
-        cov = xm.t().mm(xm) / n
-        
-        icov = torch.inverse(cov)
-        dist = xm.mm(icov).mm((x_test-m).t())
-        print("Covariance shape:",icov.shape)
-        return dist
-        
 
     def predict(self, dists, y_train, k=1):
         num_train, num_test = dists.shape

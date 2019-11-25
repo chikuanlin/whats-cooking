@@ -21,14 +21,13 @@ class bayes_solver(BaseSolver):
           y_train = torch.tensor(y_train)
         n,d = x_train.shape
         c   = y_train.max()+1
-        eps = 0.000001
         theta = torch.zeros(d,c).float()
         pi = torch.zeros(c)
         for i in range(c):
-          pi[i] = ((y_train == i).sum().float() +alpha-1.0) / (n+alpha+beta-2.0) + eps
+          pi[i] = ((y_train == i).sum().float() +alpha) / (n+alpha+beta)
           idx = (y_train == i)
           for j in range(d):
-            theta[j,i] = (x_train[idx,j].sum().float() + alpha-1.0) / (idx.sum()+alpha+beta-2.0) + eps
+            theta[j,i] = (x_train[idx,j].sum().float() + alpha) / (idx.sum()+alpha+beta) 
             
         self.pi      = torch.log(pi)
         self.theta   = torch.log(theta)
