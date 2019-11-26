@@ -13,8 +13,8 @@ sys.path.append(BASE_DIR)
 
 class SVCSolver(BaseSolver):
     
-    def __init__(self, *args, method='lsvc_ovr'):
-        super(SVCSolver, self).__init__(*args)
+    def __init__(self, dataset, in_features=6714, method='lsvc_ovr'):
+        super(SVCSolver, self).__init__(dataset, in_features)
 
         self.method = method
         self.timestamp = datetime.now().strftime("%Y%m%d%H%M%S")
@@ -22,7 +22,7 @@ class SVCSolver(BaseSolver):
 
         # Init classifiers
         lsvc = svm.LinearSVC(
-            verbose=1,
+            verbose=0,
             dual=False,
             # loss='hinge',
             penalty='l1',
