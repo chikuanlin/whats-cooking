@@ -23,15 +23,22 @@ class SVCSolver(BaseSolver):
         # Init classifiers
         lsvc = svm.LinearSVC(
             verbose=0,
-            dual=False,
+            # dual=False,
             # loss='hinge',
-            penalty='l1',
-            C=0.5
+            # penalty='l1',
+            C=100
         )
         lsvc_ovr = multiclass.OneVsRestClassifier(lsvc, n_jobs=-1)
+        svc = svm.SVC(
+            C=100, kernel='rbf', degree=3, gamma=1, coef0=1, shrinking=True, 
+            probability=False, tol=0.001, cache_size=200, class_weight=None, 
+            verbose=True, max_iter=-1)
+        svc_ovr = multiclass.OneVsRestClassifier(svc, n_jobs=-1)
         classifiers = {
             'lsvc': lsvc,
             'lsvc_ovr': lsvc_ovr,
+            'svc': svc,
+            'svc_ovr': svc_ovr,
         }
 
         self.clf = classifiers[self.method]
