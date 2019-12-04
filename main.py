@@ -3,7 +3,6 @@ from dataset.dataset import WhatsCookingStemmedDataset
 from dataset.dataset import WhatsCookingStemmedSeparatedDataset
 
 from base_solver import BaseSolver
-from example_method_file.example_method import ExampleSolver
 
 from base_data_processor import BaseDataProcessor
 from processors.simple_ingredients_encoder import SimpleIngredientsEncoder

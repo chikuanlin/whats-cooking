@@ -1,2 +1,0 @@
-LEARNING_RATE 	= 	1e-3
-TF_IDF_K 		=	5000
