@@ -17,8 +17,8 @@ if __name__ == "__main__":
     """Feature visualization using various encoding methods."""
 
     # Ingredient separated dataset
-    dataset = WhatsCookingDataset()
-    dataset_separated = WhatsCookingStemmedSeparatedDataset(stem=False)
+    dataset = WhatsCookingDataset(file_path='../dataset/train.json')
+    dataset_separated = WhatsCookingStemmedSeparatedDataset(stem=False, file_path='../dataset/train.json')
     x_as_text = [' '.join(cuisine.ingredients).lower() for cuisine in dataset_separated.cuisines]
     
     # Embedding with various encoders
@@ -41,14 +41,14 @@ if __name__ == "__main__":
     fig, ax = plt.subplots(figsize=(16,10))
     tSNE_util.plot_tSNE(
         ax, x[smp_idx, :], y[smp_idx],
-        fig_path=os.path.join(fig_dir, 'tSNE-one hot.png'))
+        fig_path=os.path.join(fig_dir, 'tSNE-one hot.eps'))
 
     fig, ax = plt.subplots(figsize=(16,10))
     tSNE_util.plot_tSNE(
         ax, x_separated[smp_idx, :], y[smp_idx], 
-        fig_path=os.path.join(fig_dir, 'tSNE-one hot separated data.png'))
+        fig_path=os.path.join(fig_dir, 'tSNE-one hot separated data.eps'))
 
     fig, ax = plt.subplots(figsize=(16,10))
     tSNE_util.plot_tSNE(
         ax, x_separated[smp_idx, :], y[smp_idx], 
-        fig_path=os.path.join(fig_dir, 'tSNE-tfidf separated data.png'))
+        fig_path=os.path.join(fig_dir, 'tSNE-tfidf separated data.eps'))

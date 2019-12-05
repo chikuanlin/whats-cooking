@@ -7,7 +7,7 @@ import matplotlib.pyplot as plt
 from sklearn.manifold import TSNE
 
 
-def plot_tSNE(ax, x, y, fig_path='t-SNE.png'):
+def plot_tSNE(ax, x, y, fig_path='t-SNE.eps'):
     """Visualize high-dimensional data using tSNE."""
 
     x_embedded = TSNE(n_components=2).fit_transform(x)
@@ -36,5 +36,5 @@ def plot_tSNE(ax, x, y, fig_path='t-SNE.png'):
         txt = ax.text(cx, cy, i)
         txts.append(txt)
 
-    plt.savefig(fig_path)
+    plt.savefig(fig_path, format='eps')
     return df, ax, txts

@@ -1,5 +1,7 @@
 import os
 import sys
+BASE_DIR = os.path.dirname(os.path.abspath(__file__))
+sys.path.append(BASE_DIR)
 import time
 from base_solver import BaseSolver
 import numpy as np
@@ -8,8 +10,6 @@ from sklearn import svm
 from sklearn import multiclass
 import pickle
 
-BASE_DIR = os.path.dirname(os.path.abspath(__file__))
-sys.path.append(BASE_DIR)
 
 class SVCSolver(BaseSolver):
     
@@ -23,10 +23,10 @@ class SVCSolver(BaseSolver):
         # Init classifiers
         lsvc = svm.LinearSVC(
             verbose=0,
-            # dual=False,
+            dual=False,
             # loss='hinge',
-            # penalty='l1',
-            C=100
+            penalty='l1',
+            C=0.5
         )
         lsvc_ovr = multiclass.OneVsRestClassifier(lsvc, n_jobs=-1)
         svc = svm.SVC(
