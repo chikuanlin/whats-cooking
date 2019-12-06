@@ -4,45 +4,45 @@ BASE_DIR = os.path.dirname(os.path.abspath(__file__))
 PARENT_DIR = os.path.abspath(os.path.join(BASE_DIR, os.path.pardir))
 sys.path.append(PARENT_DIR)
 sys.path.append(BASE_DIR)
-from dataset.dataset import WhatsCookingDataset, \
-    WhatsCookingStemmedDataset, \
-    WhatsCookingStemmedSeparatedDataset
 import numpy as np
-from sklearn.model_selection import KFold
+from dataset.dataset import WhatsCookingStemmedSeparatedDataset
 from processors.tf_idf import TfIdf
+from processors.simple_ingredients_encoder import SimpleIngredientsEncoder
 from SVM.SVC_solver import SVCSolver
-from sklearn.model_selection import cross_val_score
 from sklearn.model_selection import GridSearchCV
 
-TF_IDF_K = 3010
 
 if __name__ == "__main__":
     
     # Stemmed and ingredient separated dataset
-    dataset = WhatsCookingStemmedSeparatedDataset()
+    dataset = WhatsCookingStemmedSeparatedDataset(stem=False)
     test_cuisines = dataset.load_test_file()
     
     # TF-IDF
-    encoder = TfIdf(TF_IDF_K)
-    
+    # encoder = TfIdf()
+    encoder = SimpleIngredientsEncoder()
     x = encoder.fit_transform(dataset)
-    y = np.array([dataset.cuisine2id[cuisine.cuisine] for cuisine in dataset.cuisines])
     test_x = encoder.transform(test_cuisines)
+    y = np.array(
+        [dataset.cuisine2id[cuisine.cuisine] for cuisine in dataset.cuisines])
     
+    # Grid search with cross validation
+    solver = SVCSolver(dataset, method='lsvc_ovr')
+    parameters = {
+        'estimator__penalty': ('l1', 'l2'), 
+        'estimator__C': np.arange(0.2, 1.2, 0.2),
+    }
+    clf = GridSearchCV(solver.clf, parameters, cv=5)
+    clf.fit(x, y)
+    print(f'grid seach results: {clf.cv_results_}')
+    print(f'best model parameters: {clf.best_params_}')
+    print(f'best model score: {clf.best_score_}')
 
-    kfold = KFold(n_splits=5, random_state=0, shuffle=True)
+    # Save best model
+    solver.clf = clf.best_estimator_
+    solver._save_model()
 
-    solver = SVCSolver(dataset, in_features=TF_IDF_K)
-    # parameters = {'estimator__penalty': ('l1', 'l2'), 'estimator__C': np.arange(0.2, 1.0, 0.2)}
-    # clf = GridSearchCV(solver.clf, parameters, cv=5)
-    # clf.fit(x, y)
-    # solver.clf = clf.best_estimator_
-    # print(clf.cv_results_)
-    # print(clf.best_params_, clf.best_score_)
-
-    print(cross_val_score(solver.clf, x, y, cv=5))
-
-
-    # Refit best estimator on whole dataset
+    # Train best estimator on entire dataset
+    solver = SVCSolver(dataset, method='lsvc_ovr')
     solver.train(x, y)
     solver.test(test_x, test_cuisines)

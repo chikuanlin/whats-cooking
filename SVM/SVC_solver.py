@@ -25,12 +25,12 @@ class SVCSolver(BaseSolver):
             verbose=0,
             dual=False,
             # loss='hinge',
-            penalty='l1',
-            C=0.5
+            penalty='l2',
+            C=0.6
         )
         lsvc_ovr = multiclass.OneVsRestClassifier(lsvc, n_jobs=-1)
         svc = svm.SVC(
-            C=100, kernel='rbf', degree=3, gamma=1, coef0=1, shrinking=True, 
+            C=100, kernel='rbf', gamma='scale', shrinking=True, 
             probability=False, tol=0.001, cache_size=200, class_weight=None, 
             verbose=True, max_iter=-1)
         svc_ovr = multiclass.OneVsRestClassifier(svc, n_jobs=-1)
@@ -55,12 +55,14 @@ class SVCSolver(BaseSolver):
         print('Testing started...')
         ypred = self.clf.predict(x)
         ids = [cuisine.id for cuisine in cuisines]
-        pred_cuisines = [self.dataset.id2cuisine[label] for label in ypred.astype(int)]
+        pred_cuisines = [
+            self.dataset.id2cuisine[label] for label in ypred.astype(int)]
         self._write2csv(ids, pred_cuisines)
 
     def _save_model(self):
         print('Saving model...')
-        pickle.dump(self.clf, open(os.path.join(BASE_DIR, self.model_name + '.model'), 'wb'))
+        pickle.dump(self.clf, open(
+            os.path.join(BASE_DIR, self.model_name + '.model'), 'wb'))
 
     def load_model(self, model_path):
         print('Loading model...')
